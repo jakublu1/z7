@@ -10,7 +10,7 @@
 <p>Ostatnie błędne logowanie nastąpiło: <?php echo $wrong; ?></p>
 
 <h1>Twoje katalogi i pliki</h2>
-
+<p>Kliknij na wybrany plik aby go pobrać</p>
 <?php
 
 function listFolderFiles($dir){
@@ -24,18 +24,19 @@ function listFolderFiles($dir){
 
     echo '<ol>';
     foreach($ffs as $ff){
-        echo '<li>'.$ff;
+        echo '<li><a href="download.php?path='.$dir.'/'.$ff.'&&name='.$ff.'">'.$ff.'</a>';
         if(is_dir($dir.'/'.$ff)) listFolderFiles($dir.'/'.$ff);
         echo '</li>';
     }
     echo '</ol>';
 }
 
-
 listFolderFiles('katalogi/'.$log.'');
-	
+
+
+
 ?>
-pliki - linki do downloadu
+
 <h2>Dodaj plik</h2>
 <form action="index.php" method="POST" ENCTYPE="multipart/form-data"> 
 	<input type="file" name="plik"/> 
@@ -63,6 +64,7 @@ if(isset($_FILES["plik"]["tmp_name"])){
 		echo 'Błąd przy przesyłaniu danych!';
 	} 
 }
+
 
 ?>
 
