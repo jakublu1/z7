@@ -3,6 +3,8 @@
 	$id = getuserfield('id');
 	$wronglog = db_select("SELECT date_wrong FROM logi WHERE id = '".$id."'");
 	$wrong = $wronglog[0]['date_wrong'];
+	$login = db_select("SELECT login FROM users WHERE id = '".$id."'");
+	$log = $login[0]['login'];
 	
 ?>
 <p>Ostatnie błędne logowanie nastąpiło: <?php echo $wrong; ?></p>
@@ -29,25 +31,32 @@ function listFolderFiles($dir){
     echo '</ol>';
 }
 
-listFolderFiles('katalogi/kuba123');
 
-
+listFolderFiles('katalogi/'.$log.'');
 	
 ?>
 pliki - linki do downloadu
 <h2>Dodaj plik</h2>
 <form action="index.php" method="POST" ENCTYPE="multipart/form-data"> 
 	<input type="file" name="plik"/> 
-	
+	<label for="path">Podaj ścieżkę do katalogu:</label>
+	<?php echo $log.'/'; ?><input type="text" id="path" name="path" maxlength="30">
 	<input type="submit" value="Wyślij plik"/> 
 </form>
 <?php
 
+if (isset($_POST['path'])) {
+	$path = $log.'/'.$_POST['path'].'/';
+} else {
+	$path = $log;
+}
 if(isset($_FILES["plik"]["tmp_name"])){
-	$folder = 'katalogi/kuba123/';
+	$folder = 'katalogi/'.$path.'';
 	if (is_uploaded_file($_FILES['plik']['tmp_name'])) 
 	{ 
 		echo 'Odebrano plik: '.$_FILES['plik']['name'].'<br/>'; 
+		echo $path; echo '</br>';
+		echo $folder;
 		move_uploaded_file($_FILES['plik']['tmp_name'], 
 		$folder.$_FILES['plik']['name']); 
 	} else {
@@ -58,8 +67,21 @@ if(isset($_FILES["plik"]["tmp_name"])){
 ?>
 
 <h2>Dodaj nowy katalog</h2>
-tworzenie katalogow - formularz
+<form action="index.php" method="POST" ENCTYPE="multipart/form-data"> 
+	<label for="fol">Podaj nazwę katalogu:</label>
+	<input type="text" id="fol" name="fol" maxlength="30">
+	<input type="submit" value="Stwórz"/> 
+</form>
+<?php
+if (isset($_POST['fol'])) {
+	if (!file_exists('katalogi/'.$log.'/'.$_POST['fol'].'')) {
+		mkdir('katalogi/'.$log.'/'.$_POST['fol'].'', 0777, true);
+	} else {
+		echo 'Katalog o podanej nazwie już istnieje.';
+	}
+}
 
+?>
 </br>
 </br>
 <a href="logout.php">Wyloguj się</a>
